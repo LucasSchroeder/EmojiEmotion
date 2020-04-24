@@ -5,8 +5,8 @@ Brown University
 """
 
 # Resize image size for task 1. Task 2 must have an image size of 224,
-# so that is hard coded in elsewhere.
-img_size = 224
+# so that is hard coded in run.py in the main function.
+img_size = 48
 
 # The number of image scene classes. Don't change this.
 category_num = 15

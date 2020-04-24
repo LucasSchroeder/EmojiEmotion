@@ -58,7 +58,7 @@ class VGGModel(tf.keras.Model):
         self.head = []
 
         self.head.append(Flatten())
-        self.head.append(Dense(15, activation='softmax'))
+        self.head.append(Dense(7, activation='softmax'))
 
 
         # ============================================================================
