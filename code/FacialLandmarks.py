@@ -65,6 +65,10 @@ while run_cam:
         # Draw on our image, all the finded cordinate points (x,y) 
         for (x, y) in shape:
             cv2.circle(image, (x, y), 2, (0, 255, 0), -1)
+
+            max_index = np.argmax(predictions[0])
+            emotions = ('angry', 'disgust', 'fear', 'happy', 'sad', 'surprise', 'neutral')
+            predicted_emotion = emotions[max_index]
     
     # show the gray image
     cv2.namedWindow('image',cv2.WINDOW_NORMAL)
@@ -82,7 +86,6 @@ while run_cam:
     # This checks if the "esc" key was pressed to exit the livestream
     if k == 27:
         cv2.destroyAllWindows()
-        
         break
     # The next if statement determines if the window was closed using
     # the "x" button in the top left corner of the window. 
