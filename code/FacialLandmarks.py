@@ -46,6 +46,12 @@ predictor = dlib.shape_predictor(p)
 
 run_cam = True
 
+# create an overlay image. You can use any image
+overlaidImage = np.ones((100,100,3),dtype='uint8')*255
+
+# Set initial value of weights
+alpha = 0.4
+
 # if (you have only 1 webcam){ set device = 0} else{ chose your favorite webcam setting device = 1, 2 ,3 ... }
 cap = cv2.VideoCapture(0)
 while run_cam:
@@ -56,16 +62,28 @@ while run_cam:
     # Get faces into webcam's image
     rects = detector(gray, 0)
     
-    # For each detected face, find the landmark.
+    # For each detected face, find the landmarks.
     for (i, rect) in enumerate(rects):
         # Make the prediction and transfom it to numpy array
+        #gray = cv2.flip(image,1)
         shape = predictor(gray, rect)
         shape = face_utils.shape_to_np(shape)
     
         # Draw on our image, all the finded cordinate points (x,y) 
-        for (x, y) in shape:
-            cv2.circle(image, (x, y), 2, (0, 255, 0), -1)
-    
+        # for (x, y) in shape:
+        #     cv2.circle(image, (x, y), 2, (0, 255, 0), -1)
+        cv2.circle(image, (shape[28,0], shape[34,1]), 2, (0, 255, 0), -1)
+        # print(shape.shape)
+        point1 = shape[28,:]
+        point2= shape[(len(shape[:,0]))-1]
+        print(point1)
+        print(point2)
+        #gray = cv2.flip(image,1)
+        # Select the region in the background where we want to add the image and add the images using cv2.addWeighted()
+        added_image = cv2.addWeighted(image[point1[1]-50:point1[1]+50,point1[0]-50:point1[0]+50,:],alpha,overlaidImage[0:100,0:100,:],1-alpha,0)
+        # Change the region with the result
+        image[point1[1]-50:point1[1]+50,point1[0]-50:point1[0]+50] = added_image
+
     # show the gray image
     cv2.namedWindow('image',cv2.WINDOW_NORMAL)
     width = image.shape[1]
@@ -74,11 +92,20 @@ while run_cam:
 
     cv2.imshow("image", image)
     #cv2.imshow("Output")
-    print("facce")
+    
     # If you are using a 64-bit machine, you have to modify 
     # cv2.waitKey(0) line as follows : k = cv2.waitKey(0) & 0xFF
     k = cv2.waitKey(1) 
-    print("output")
+    # press a to increase alpha by 0.1
+    if k == ord('a'):
+        alpha +=0.1
+        if alpha >=1.0:
+            alpha = 1.0
+    # press d to decrease alpha by 0.1
+    elif k== ord('d'):
+        alpha -= 0.1
+        if alpha <=0.0:
+            alpha = 0.0
     # This checks if the "esc" key was pressed to exit the livestream
     if k == 27:
         cv2.destroyAllWindows()
