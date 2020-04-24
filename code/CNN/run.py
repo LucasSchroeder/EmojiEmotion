@@ -113,7 +113,7 @@ def main():
     else:
         model = VGGModel()
         checkpoint_path = "./vgg_model_checkpoints/"
-        model(tf.keras.Input(shape=(224, 224, 3)))
+        model(tf.keras.Input(shape=(48, 48, 3)))
         model.summary()
 
         # Don't load pretrained vgg if loading checkpoint

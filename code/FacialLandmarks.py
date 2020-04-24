@@ -47,7 +47,7 @@ predictor = dlib.shape_predictor(p)
 run_cam = True
 
 # if (you have only 1 webcam){ set device = 0} else{ chose your favorite webcam setting device = 1, 2 ,3 ... }
-cap = cv2.VideoCapture(cv2.CAP_DSHOW)
+cap = cv2.VideoCapture(0)
 while run_cam:
     # Get the image from the webcam and convert it into a gray image scale
     _, image = cap.read()
