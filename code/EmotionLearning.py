@@ -7,9 +7,16 @@ Brown University
 import numpy as np
 import pandas as pd
 import tensorflow as tf
-import hyperparameters as hp
+#import hyperparameters as hp
 from tensorflow.keras.layers import \
         Conv2D, MaxPool2D, Dropout, Flatten, Dense
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.optimizers import Adam
+from tensorflow.keras.losses import categorical_crossentropy
+from tensorflow.keras.utils import to_categorical
+#from tensorboard.utils import ImageLabelingLogger, ConfusionMatrixLogger
+
+#install pandas, np_utils 
 
 
 df=pd.read_csv('fer2013.csv')
@@ -37,13 +44,19 @@ y_training = np.array(y_training,'float32')
 x_testing = np.array(x_testing,'float32')
 y_testing = np.array(y_testing,'float32')
 
+y_training=to_categorical(y_training, num_classes=num_labels)
+y_testing=to_categorical(y_testing, num_classes=num_labels)
+
 #preprocess
 
-x_training = np.divide(np.subtract(x_training - np.mean(x_training)), np.std(x_training))
-y_training = np.divide(np.subtract(y_training - np.mean(y_training)), np.std(y_training))
+x_training = np.divide(np.subtract(x_training, np.mean(x_training)), np.std(x_training))
+y_training = np.divide(np.subtract(y_training, np.mean(y_training)), np.std(y_training))
 
-x_testing = np.divide(np.subtract(x_testing - np.mean(x_testing)), np.std(x_testing))
-y_testing = np.divide(np.subtract(y_testing - np.mean(y_testing)), np.std(y_testing))
+x_testing = np.divide(np.subtract(x_testing, np.mean(x_testing)), np.std(x_testing))
+y_testing = np.divide(np.subtract(y_testing, np.mean(y_testing)), np.std(y_testing))
+
+x_training = x_training.reshape(x_training.shape[0], 48, 48, 1)
+x_testing = x_testing.reshape(x_testing.shape[0], 48, 48, 1)
 
 model = Sequential([
     # Block 1
@@ -74,7 +87,21 @@ model = Sequential([
     tf.keras.layers.Dense(num_labels, activation= "softmax")
 ])
 
-model.fit(x_training, y_training, batch_size=batch_size, epochs=epochs, verbose=1, validation_data=(x_testing, y_testing), shuffle=True)
+
+model.compile(loss=categorical_crossentropy, optimizer=Adam(), metrics=['accuracy'])
+"""callback_list = [
+     tf.keras.callbacks.ModelCheckpoint(
+            filepath="weights.e{epoch:02d}-" + \
+                    "acc{val_sparse_categorical_accuracy:.4f}.h5",
+            monitor='val_sparse_categorical_accuracy',
+            save_best_only=True,
+            save_weights_only=True),
+        tf.keras.callbacks.TensorBoard(
+            update_freq='batch',
+            profile_batch=0),
+        ImageLabelingLogger(x_training)
+    ] """
+model.fit(x_training, y_training, batch_size=batch_size, epochs=epochs, verbose=1, validation_data=(x_testing, y_testing), callbacklist=callback_list, shuffle=True)
 
 fer_json = model.to_json()
 with open("fer.json", "w") as json_file:
