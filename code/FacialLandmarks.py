@@ -70,15 +70,13 @@ while run_cam:
         shape = face_utils.shape_to_np(shape)
     
         # Draw on our image, all the finded cordinate points (x,y) 
-<<<<<<< HEAD
         for (x, y) in shape:
             cv2.circle(image, (x, y), 2, (0, 255, 0), -1)
 
-            max_index = np.argmax(predictions[0])
-            emotions = ('angry', 'disgust', 'fear', 'happy', 'sad', 'surprise', 'neutral')
-            predicted_emotion = emotions[max_index]
+            #max_index = np.argmax(predictions[0])
+            #emotions = ('angry', 'disgust', 'fear', 'happy', 'sad', 'surprise', 'neutral')
+            #predicted_emotion = emotions[max_index]
     
-=======
         # for (x, y) in shape:
         #     cv2.circle(image, (x, y), 2, (0, 255, 0), -1)
         cv2.circle(image, (shape[28,0], shape[34,1]), 2, (0, 255, 0), -1)
@@ -89,17 +87,42 @@ while run_cam:
         print(point2)
         #gray = cv2.flip(image,1)
         # Select the region in the background where we want to add the image and add the images using cv2.addWeighted()
-        added_image = cv2.addWeighted(image[point1[1]-50:point1[1]+50,point1[0]-50:point1[0]+50,:],alpha,overlaidImage[0:100,0:100,:],1-alpha,0)
-        # Change the region with the result
-        image[point1[1]-50:point1[1]+50,point1[0]-50:point1[0]+50] = added_image
 
->>>>>>> 04647507d696c07726962cfa0e520c2f1113143a
+        # Get the standard deviation between points to calculate the ratio relating to how far you are from the camera
+        ratio = np.std(shape[:,0])
+        disp = int(2.5*ratio)
+        image_width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+        image_height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+        # Check boundaries to prevent segmentation fault
+        if (0 < point1[0]-disp < image_width and 0 < point1[0]+disp < image_width
+        and 0 < point1[1]-disp < image_height and 0 < point1[1]+disp < image_height):
+            # added_image = cv2.addWeighted(image[point1[1]-disp:point1[1]+disp,point1[0]-disp:point1[0]+disp,:],alpha,overlaidImage[0:(disp*2),0:(disp*2),:],1-alpha,0)
+            # Change the region with the result
+            # image[point1[1]-disp:point1[1]+disp,point1[0]-disp:point1[0]+disp] = added_image
+            
+            # Source on how to overlay images on top of each other
+            # https://stackoverflow.com/questions/14063070/overlay-a-smaller-image-on-a-larger-image-python-opencv
+            emoji = cv2.imread('SurprisedEmojiPNG.png', -1)
+            emoji = cv2.resize(emoji, (2*disp,2*disp))
+
+            x_offset = point1[0] - disp
+            y_offset = point1[1] - disp
+            y1, y2 = y_offset, y_offset + emoji.shape[0]
+            x1, x2 = x_offset, x_offset + emoji.shape[1]
+
+            alpha_s = emoji[:, :, 3] / 255.0
+            alpha_l = 1.0 - alpha_s
+
+            for c in range(0, 3):
+                image[y1:y2, x1:x2, c] = (alpha_s * emoji[:, :, c] +
+                                        alpha_l * image[y1:y2, x1:x2, c])
+
     # show the gray image
     cv2.namedWindow('image',cv2.WINDOW_NORMAL)
     width = image.shape[1]
     height = image.shape[0]
     #cv2.resizeWindow('image', 200, 200)
-
+    
     cv2.imshow("image", image)
     #cv2.imshow("Output")
     
