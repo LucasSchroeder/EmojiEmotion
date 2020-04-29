@@ -94,51 +94,52 @@ cap = cv2.VideoCapture(0)
 # reacts to the 'y' and 'n' keys to turn the emoji on (y) and off (n). 
 drawEmoji = True
 while run_cam:
+    
     # Get the image from the webcam and convert it into a gray image scale
     _, image = cap.read()
-    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-    
-    # Get faces into webcam's image
-    rects = detector(gray, 0)
-    
-    # For each detected face, find the landmarks.
-    for (i, rect) in enumerate(rects):
-        # compute the bounding box of the face and draw it on the image
-        # https://www.pyimagesearch.com/2018/04/02/faster-facial-landmark-detector-with-dlib/
-        (cornerX, cornerY, squareWidth, squareHeight) = face_utils.rect_to_bb(rect)
-        cv2.rectangle(image,(cornerX,cornerY), (cornerX+squareWidth,cornerY+squareHeight),(255,255,0),1)
+    if drawEmoji == True:
+        gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
         
-        ## ONCE WE HAVE A WORKING SET OF WEIGHTS FOR THE EMOTION CLASSIFIER, THIS LINE WILL PREDICT 
-        ## THE EMOTION OF THE CURRENT FACE. WE CAN THEN USE A SERIES OF SWITCH OR IF STATEMENTS TO
-        ## PASTE ON THE CORRECT EMOJI 
-        ###############################################################################################
-        # emotion_id, confidence = predict_emotion(gray, cornerX, cornerY, squareWidth, squareHeight)
-		###############################################################################################
+        # Get faces into webcam's image
+        rects = detector(gray, 0)
+        
+        # For each detected face, find the landmarks.
+        for (i, rect) in enumerate(rects):
+            # compute the bounding box of the face and draw it on the image
+            # https://www.pyimagesearch.com/2018/04/02/faster-facial-landmark-detector-with-dlib/
+            (cornerX, cornerY, squareWidth, squareHeight) = face_utils.rect_to_bb(rect)
+            cv2.rectangle(image,(cornerX,cornerY), (cornerX+squareWidth,cornerY+squareHeight),(255,255,0),1)
+            
+            ## ONCE WE HAVE A WORKING SET OF WEIGHTS FOR THE EMOTION CLASSIFIER, THIS LINE WILL PREDICT 
+            ## THE EMOTION OF THE CURRENT FACE. WE CAN THEN USE A SERIES OF SWITCH OR IF STATEMENTS TO
+            ## PASTE ON THE CORRECT EMOJI 
+            ###############################################################################################
+            # emotion_id, confidence = predict_emotion(gray, cornerX, cornerY, squareWidth, squareHeight)
+            ###############################################################################################
 
 
-        # Predict the shape of the face and transfom it to numpy array
-        #gray = cv2.flip(image,1)
-        shape = predictor(gray, rect)
-        shape = face_utils.shape_to_np(shape)
-    
-        # Draw on our image, all the finded cordinate points (x,y) 
-        for (x, y) in shape:
-            cv2.circle(image, (x, y), 2, (0, 255, 0), -1)
+            # Predict the shape of the face and transfom it to numpy array
+            #gray = cv2.flip(image,1)
+            shape = predictor(gray, rect)
+            shape = face_utils.shape_to_np(shape)
+        
+            # Draw on our image, all the finded cordinate points (x,y) 
+            for (x, y) in shape:
+                cv2.circle(image, (x, y), 2, (0, 255, 0), -1)
 
-            #max_index = np.argmax(predictions[0])
-            #emotions = ('angry', 'disgust', 'fear', 'happy', 'sad', 'surprise', 'neutral')
-            #predicted_emotion = emotions[max_index]
-    
-        #cv2.circle(image, (shape[28,0], shape[34,1]), 2, (0, 255, 0), -1)
-        # print(shape.shape)
-        point1 = shape[29,:]
-        point2= shape[(len(shape[:,0]))-1]
-        print(point1)
-        print(point2)
-        #gray = cv2.flip(image,1)
-        # Select the region in the background where we want to add the image and add the images using cv2.addWeighted()
+                #max_index = np.argmax(predictions[0])
+                #emotions = ('angry', 'disgust', 'fear', 'happy', 'sad', 'surprise', 'neutral')
+                #predicted_emotion = emotions[max_index]
+        
+            #cv2.circle(image, (shape[28,0], shape[34,1]), 2, (0, 255, 0), -1)
+            # print(shape.shape)
+            point1 = shape[29,:]
+            point2= shape[(len(shape[:,0]))-1]
+            print(point1)
+            print(point2)
+            #gray = cv2.flip(image,1)
+            # Select the region in the background where we want to add the image and add the images using cv2.addWeighted()
 
-        if drawEmoji == True:
             # Get the standard deviation between points to calculate the ratio relating to how far you are from the camera
             ratio = np.std(shape[:,0])
             disp = int(2.8*ratio)
