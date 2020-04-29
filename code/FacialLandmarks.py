@@ -81,7 +81,7 @@ while run_cam:
         #     cv2.circle(image, (x, y), 2, (0, 255, 0), -1)
         cv2.circle(image, (shape[28,0], shape[34,1]), 2, (0, 255, 0), -1)
         # print(shape.shape)
-        point1 = shape[28,:]
+        point1 = shape[29,:]
         point2= shape[(len(shape[:,0]))-1]
         print(point1)
         print(point2)
@@ -90,7 +90,7 @@ while run_cam:
 
         # Get the standard deviation between points to calculate the ratio relating to how far you are from the camera
         ratio = np.std(shape[:,0])
-        disp = int(2.5*ratio)
+        disp = int(2.8*ratio)
         image_width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
         image_height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
         # Check boundaries to prevent segmentation fault
@@ -102,6 +102,8 @@ while run_cam:
             
             # Source on how to overlay images on top of each other
             # https://stackoverflow.com/questions/14063070/overlay-a-smaller-image-on-a-larger-image-python-opencv
+
+            # Suprised Emoji is from https://emojiisland.com/products/surprised-emoji-png
             emoji = cv2.imread('SurprisedEmojiPNG.png', -1)
             emoji = cv2.resize(emoji, (2*disp,2*disp))
 
