@@ -40,6 +40,41 @@ from skimage import io
 from skimage import img_as_float, img_as_ubyte
 from skimage.color import rgb2gray
 
+# https://github.com/Paulymorphous/Facial-Emotion-Recognition
+###
+# This method will load the weights that our CNN has produced
+def load_model(path):
+
+# 	json_file = open(path + 'model.json', 'r')
+# 	loaded_model_json = json_file.read()
+# 	json_file.close()
+	
+# 	model = model_from_json(loaded_model_json)
+# 	model.load_weights(path + "model.h5")
+# 	print("Loaded model from disk")
+# 	return model
+    return 0
+
+# We will use this method to predict the emotion of a subject. It takes in 
+# the whole webcam image and then resizes it according to the bounding 
+# box around the face. Before using the model to predict the emotion, we 
+# resize it to a 48x48 image, just like the image samples from the FER2013
+# dataset. 
+def predict_emotion(gray, x, y, w, h):
+	# face = np.expand_dims(np.expand_dims(np.resize(gray[y:y+w, x:x+h]/255.0, (48, 48)),-1), 0)
+	# prediction = model.predict([face])
+
+	# return(int(np.argmax(prediction)), round(max(prediction[0])*100, 2))
+    return 0
+
+# Once we have a working model for our emotion recognition, we can use these lines to 
+# load the model, which will call load_model, defined above
+###############################################################################################
+# path = "Models/"
+# model = load_model(path)
+###############################################################################################
+
+
 p = "shape_predictor_68_face_landmarks.dat"
 detector = dlib.get_frontal_face_detector()
 predictor = dlib.shape_predictor(p)
@@ -54,68 +89,106 @@ alpha = 0.4
 
 # if (you have only 1 webcam){ set device = 0} else{ chose your favorite webcam setting device = 1, 2 ,3 ... }
 cap = cv2.VideoCapture(0)
+
+# This is a boolean that can be set to True or False to turn the emoji feature on and off. The program
+# reacts to the 'y' and 'n' keys to turn the emoji on (y) and off (n). 
+drawEmoji = True
 while run_cam:
+    
     # Get the image from the webcam and convert it into a gray image scale
     _, image = cap.read()
-    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-    
-    # Get faces into webcam's image
-    rects = detector(gray, 0)
-    
-    # For each detected face, find the landmarks.
-    for (i, rect) in enumerate(rects):
-        # Make the prediction and transfom it to numpy array
-        #gray = cv2.flip(image,1)
-        shape = predictor(gray, rect)
-        shape = face_utils.shape_to_np(shape)
-    
-        # Draw on our image, all the finded cordinate points (x,y) 
-<<<<<<< HEAD
-        for (x, y) in shape:
-            cv2.circle(image, (x, y), 2, (0, 255, 0), -1)
+    if drawEmoji == True:
+        gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+        
+        # Get faces into webcam's image
+        rects = detector(gray, 0)
+        
+        # For each detected face, find the landmarks.
+        for (i, rect) in enumerate(rects):
+            # compute the bounding box of the face and draw it on the image
+            # https://www.pyimagesearch.com/2018/04/02/faster-facial-landmark-detector-with-dlib/
+            (cornerX, cornerY, squareWidth, squareHeight) = face_utils.rect_to_bb(rect)
+            cv2.rectangle(image,(cornerX,cornerY), (cornerX+squareWidth,cornerY+squareHeight),(255,255,0),1)
+            
+            ## ONCE WE HAVE A WORKING SET OF WEIGHTS FOR THE EMOTION CLASSIFIER, THIS LINE WILL PREDICT 
+            ## THE EMOTION OF THE CURRENT FACE. WE CAN THEN USE A SERIES OF SWITCH OR IF STATEMENTS TO
+            ## PASTE ON THE CORRECT EMOJI 
+            ###############################################################################################
+            # emotion_id, confidence = predict_emotion(gray, cornerX, cornerY, squareWidth, squareHeight)
+            ###############################################################################################
 
-            max_index = np.argmax(predictions[0])
-            emotions = ('angry', 'disgust', 'fear', 'happy', 'sad', 'surprise', 'neutral')
-            predicted_emotion = emotions[max_index]
-    
-=======
-        # for (x, y) in shape:
-        #     cv2.circle(image, (x, y), 2, (0, 255, 0), -1)
-        cv2.circle(image, (shape[28,0], shape[34,1]), 2, (0, 255, 0), -1)
-        # print(shape.shape)
-        point1 = shape[28,:]
-        point2= shape[(len(shape[:,0]))-1]
-        print(point1)
-        print(point2)
-        #gray = cv2.flip(image,1)
-        # Select the region in the background where we want to add the image and add the images using cv2.addWeighted()
-        added_image = cv2.addWeighted(image[point1[1]-50:point1[1]+50,point1[0]-50:point1[0]+50,:],alpha,overlaidImage[0:100,0:100,:],1-alpha,0)
-        # Change the region with the result
-        image[point1[1]-50:point1[1]+50,point1[0]-50:point1[0]+50] = added_image
 
->>>>>>> 04647507d696c07726962cfa0e520c2f1113143a
+            # Predict the shape of the face and transfom it to numpy array
+            #gray = cv2.flip(image,1)
+            shape = predictor(gray, rect)
+            shape = face_utils.shape_to_np(shape)
+        
+            # Draw on our image, all the finded cordinate points (x,y) 
+            for (x, y) in shape:
+                cv2.circle(image, (x, y), 2, (0, 255, 0), -1)
+
+                #max_index = np.argmax(predictions[0])
+                #emotions = ('angry', 'disgust', 'fear', 'happy', 'sad', 'surprise', 'neutral')
+                #predicted_emotion = emotions[max_index]
+        
+            #cv2.circle(image, (shape[28,0], shape[34,1]), 2, (0, 255, 0), -1)
+            # print(shape.shape)
+            point1 = shape[29,:]
+            point2= shape[(len(shape[:,0]))-1]
+            print(point1)
+            print(point2)
+            #gray = cv2.flip(image,1)
+            # Select the region in the background where we want to add the image and add the images using cv2.addWeighted()
+
+            # Get the standard deviation between points to calculate the ratio relating to how far you are from the camera
+            ratio = np.std(shape[:,0])
+            disp = int(2.8*ratio)
+            image_width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+            image_height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+            # Check boundaries to prevent segmentation fault
+            if (0 < point1[0]-disp < image_width and 0 < point1[0]+disp < image_width
+            and 0 < point1[1]-disp < image_height and 0 < point1[1]+disp < image_height):
+                # added_image = cv2.addWeighted(image[point1[1]-disp:point1[1]+disp,point1[0]-disp:point1[0]+disp,:],alpha,overlaidImage[0:(disp*2),0:(disp*2),:],1-alpha,0)
+                # Change the region with the result
+                # image[point1[1]-disp:point1[1]+disp,point1[0]-disp:point1[0]+disp] = added_image
+                
+                # Source on how to overlay images on top of each other
+                # https://stackoverflow.com/questions/14063070/overlay-a-smaller-image-on-a-larger-image-python-opencv
+
+                # Suprised Emoji is from https://emojiisland.com/products/surprised-emoji-png
+                emoji = cv2.imread('SurprisedEmojiPNG.png', -1)
+                emoji = cv2.resize(emoji, (2*disp,2*disp))
+
+                x_offset = point1[0] - disp
+                y_offset = point1[1] - disp
+                y1, y2 = y_offset, y_offset + emoji.shape[0]
+                x1, x2 = x_offset, x_offset + emoji.shape[1]
+
+                alpha_s = emoji[:, :, 3] / 255.0
+                alpha_l = 1.0 - alpha_s
+
+                for c in range(0, 3):
+                    image[y1:y2, x1:x2, c] = (alpha_s * emoji[:, :, c] +
+                                            alpha_l * image[y1:y2, x1:x2, c])
+
     # show the gray image
     cv2.namedWindow('image',cv2.WINDOW_NORMAL)
     width = image.shape[1]
     height = image.shape[0]
     #cv2.resizeWindow('image', 200, 200)
-
+    
     cv2.imshow("image", image)
     #cv2.imshow("Output")
     
     # If you are using a 64-bit machine, you have to modify 
     # cv2.waitKey(0) line as follows : k = cv2.waitKey(0) & 0xFF
     k = cv2.waitKey(1) 
-    # press a to increase alpha by 0.1
-    if k == ord('a'):
-        alpha +=0.1
-        if alpha >=1.0:
-            alpha = 1.0
-    # press d to decrease alpha by 0.1
-    elif k== ord('d'):
-        alpha -= 0.1
-        if alpha <=0.0:
-            alpha = 0.0
+    # press y to turn on emoji
+    if k == ord('y'):
+        drawEmoji = True
+    # press n to turn off emoji
+    elif k== ord('n'):
+        drawEmoji = False
     # This checks if the "esc" key was pressed to exit the livestream
     if k == 27:
         cv2.destroyAllWindows()
