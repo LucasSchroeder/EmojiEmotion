@@ -23,7 +23,7 @@ df=pd.read_csv('fer2013.csv')
 
 num_features = 64
 num_labels = 7
-batch_size = 64
+batch_size = 32
 epochs = 30
 width, height = 48, 48
 
