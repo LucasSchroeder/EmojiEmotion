@@ -156,7 +156,7 @@ while run_cam:
                 # https://stackoverflow.com/questions/14063070/overlay-a-smaller-image-on-a-larger-image-python-opencv
 
                 # Suprised Emoji is from https://emojiisland.com/products/surprised-emoji-png
-                emoji = cv2.imread('SurprisedEmojiPNG.png', -1)
+                emoji = cv2.imread('EmojiImages/NeutralEmoji.png', -1)
                 emoji = cv2.resize(emoji, (2*disp,2*disp))
 
                 x_offset = point1[0] - disp
