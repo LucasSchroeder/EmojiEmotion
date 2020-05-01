@@ -20,6 +20,7 @@ from tensorflow.keras.utils import to_categorical
 
 
 df=pd.read_csv('fer2013.csv')
+df.dropna()
 
 num_features = 64
 num_labels = 7
