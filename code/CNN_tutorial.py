@@ -128,8 +128,8 @@ model.fit(
           #validation_split = 0.2,
           validation_data=(test_data, test_labels),
           shuffle = True,
-          #callbacks=[lr_reducer, checkpointer, early_stopper]
-          callbacks=[EarlyStopping(monitor='val_loss', patience=1)]
+          callbacks=[lr_reducer, checkpointer, early_stopper]
+          #callbacks=[EarlyStopping(monitor='val_loss', patience=1)]
           )
 
 predicted_test_labels = np.argmax(model.predict(test_data), axis=1)
