@@ -16,6 +16,7 @@ from tensorflow.keras.losses import categorical_crossentropy
 from tensorflow.keras.utils import to_categorical
 from keras.layers import MaxPooling2D # Maxpooling function
 from keras.layers.normalization import BatchNormalization
+from keras.regularizers import l2
 #from tensorboard.utils import ImageLabelingLogger, ConfusionMatrixLogger
 
 #install pandas, np_utils 
