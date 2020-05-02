@@ -95,6 +95,8 @@ model = Sequential([
 ])
 
 
+
+
 model.compile(loss=categorical_crossentropy, optimizer=Adam(), metrics=['accuracy'])
 """callback_list = [
      tf.keras.callbacks.ModelCheckpoint(
@@ -108,6 +110,8 @@ model.compile(loss=categorical_crossentropy, optimizer=Adam(), metrics=['accurac
             profile_batch=0),
         ImageLabelingLogger(x_training)
     ] """
+
+print(model.summary())
 model.fit(x_training, y_training, batch_size=batch_size, epochs=epochs, verbose=1, validation_data=(x_testing, y_testing), shuffle=True)
 
 fer_json = model.to_json()
