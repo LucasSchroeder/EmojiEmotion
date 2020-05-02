@@ -118,9 +118,7 @@ print(model.summary())
 
 lr_reducer = ReduceLROnPlateau(monitor='val_loss', factor=0.9, patience=3)
 early_stopper = EarlyStopping(monitor='val_acc', min_delta=0, patience=6, mode='auto')
-checkpointer = ModelCheckpoint("./your_model_checkpoints/" + \
-                    "weights.e{epoch:02d}-" + \
-                    "acc{val_sparse_categorical_accuracy:.4f}.h5",monitor='val_loss', verbose=1, save_best_only=True)
+checkpointer = ModelCheckpoint("./your_model_checkpoints/weights.hd5",monitor='val_loss', verbose=1, save_best_only=True)
 
 model.fit(
           train_data,
