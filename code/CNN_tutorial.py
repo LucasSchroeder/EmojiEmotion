@@ -123,11 +123,13 @@ checkpointer = ModelCheckpoint("./your_model_checkpoints/weights.hd5",monitor='v
 model.fit(
           train_data,
           train_labels,
-          epochs = epochs,
+          epochs = 2, # change this
           batch_size = batch_size,
-          validation_split = 0.2,
+          #validation_split = 0.2,
+          validation_data=(test_data, test_labels),
           shuffle = True,
-          callbacks=[lr_reducer, checkpointer, early_stopper]
+          #callbacks=[lr_reducer, checkpointer, early_stopper]
+          callbacks=[EarlyStopping(monitor='val_loss', patience=1)]
           )
 
 predicted_test_labels = np.argmax(model.predict(test_data), axis=1)
