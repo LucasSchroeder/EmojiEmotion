@@ -60,10 +60,16 @@ def load_model(path):
 # resize it to a 48x48 image, just like the image samples from the FER2013
 # dataset. 
 def predict_emotion(gray, x, y, w, h):
-	face = np.expand_dims(np.expand_dims(np.resize(gray[y:y+w, x:x+h]/255.0, (48, 48)),-1), 0)
-	prediction = model.predict([face])
+    
+    face = np.expand_dims(np.expand_dims(np.resize(gray[y:y+w, x:x+h]/255, (48, 48)),-1), 0)
 
-	return(int(np.argmax(prediction)), round(max(prediction[0])*100, 2))
+    #face = cv2.imread('EmojiImages/NeutralEmoji.png', -1)
+    #face = cv2.imread('surprise_test.jpg',-1)
+    #face = np.expand_dims(np.expand_dims(np.resize(cv2.imread('surprise_test.jpg',0)/255.0, (48, 48)),-1), 0)
+    #face =face
+    prediction = model.predict([face])
+
+    return(int(np.argmax(prediction)), round(max(prediction[0])*100, 2))
 
 
 # Once we have a working model for our emotion recognition, we can use these lines to 
@@ -74,7 +80,8 @@ model = load_model(path)
 ###############################################################################################
 
 emotion_dict = {0: "Angry", 1: "Disgust", 2: "Fear", 3: "Happy", 4: "Sad", 5: "Surprise", 6: "Neutral"}
-
+emoji_path_dict = {0: "EmojiImages/AngryEmoji.png", 1: "EmojiImages/DisgustEmoji.png", 2: "EmojiImages/ScaredEmoji.png", 3: "EmojiImages/SmilingEmoji.png", 4: "EmojiImages/SadEmoji.png", 5: "EmojiImages/SurprisedEmoji.png", 6: "EmojiImages/NeutralEmoji.png"}
+colour_cycle = ((255, 0, 0), (0, 255, 0), (0, 0, 255), (230, 230, 250))
 
 p = "shape_predictor_68_face_landmarks.dat"
 detector = dlib.get_frontal_face_detector()
@@ -104,21 +111,29 @@ while run_cam:
         # Get faces into webcam's image
         rects = detector(gray, 0)
         
+
         # For each detected face, find the landmarks.
         for (i, rect) in enumerate(rects):
             # compute the bounding box of the face and draw it on the image
             # https://www.pyimagesearch.com/2018/04/02/faster-facial-landmark-detector-with-dlib/
             (cornerX, cornerY, squareWidth, squareHeight) = face_utils.rect_to_bb(rect)
+            cornerX = cornerX
+            cornerY = cornerY
+            squareWidth = squareWidth
+            squareHeight = squareHeight
             cv2.rectangle(image,(cornerX,cornerY), (cornerX+squareWidth,cornerY+squareHeight),(255,255,0),1)
             
             ## ONCE WE HAVE A WORKING SET OF WEIGHTS FOR THE EMOTION CLASSIFIER, THIS LINE WILL PREDICT 
             ## THE EMOTION OF THE CURRENT FACE. WE CAN THEN USE A SERIES OF SWITCH OR IF STATEMENTS TO
-            ## PASTE ON THE CORRECT EMOJI 
+            ## PASTE ON THE CORRECT EMOJI
             ###############################################################################################
             emotion_id, confidence = predict_emotion(gray, cornerX, cornerY, squareWidth, squareHeight)
             ###############################################################################################
+            #print(emotion_id)
+
             emotion = emotion_dict[emotion_id]
-            cv2.putText(image, emotion,(cornerX+20,cornerY-100), cv2.FONT_HERSHEY_SIMPLEX, 1.5, (255,255,255), lineType=cv2.LINE_AA)
+            cv2.putText(image, emotion,(cornerX+20,cornerY-50), cv2.FONT_HERSHEY_SIMPLEX, 1.5, (255,255,255), lineType=cv2.LINE_AA)
+            Emoji_File_Path= emoji_path_dict[emotion_id]
 
 
             # Predict the shape of the face and transfom it to numpy array
@@ -126,7 +141,7 @@ while run_cam:
             shape = predictor(gray, rect)
             shape = face_utils.shape_to_np(shape)
         
-            # Draw on our image, all the finded cordinate points (x,y) 
+            # Draw on our image, all the cordinate points (x,y) 
             for (x, y) in shape:
                 cv2.circle(image, (x, y), 2, (0, 255, 0), -1)
 
@@ -138,8 +153,8 @@ while run_cam:
             # print(shape.shape)
             point1 = shape[29,:]
             point2= shape[(len(shape[:,0]))-1]
-            print(point1)
-            print(point2)
+            # print(point1)
+            # print(point2)
             #gray = cv2.flip(image,1)
             # Select the region in the background where we want to add the image and add the images using cv2.addWeighted()
 
@@ -159,7 +174,7 @@ while run_cam:
                 # https://stackoverflow.com/questions/14063070/overlay-a-smaller-image-on-a-larger-image-python-opencv
 
                 # Suprised Emoji is from https://emojiisland.com/products/surprised-emoji-png
-                emoji = cv2.imread('EmojiImages/NeutralEmoji.png', -1)
+                emoji = cv2.imread(Emoji_File_Path, -1)
                 emoji = cv2.resize(emoji, (2*disp,2*disp))
 
                 x_offset = point1[0] - disp

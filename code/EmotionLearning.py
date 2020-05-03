@@ -70,47 +70,6 @@ x_testing = np.divide(np.subtract(x_testing, np.mean(x_testing)), np.std(x_testi
 x_training = x_training.reshape(x_training.shape[0], 48, 48, 1)
 x_testing = x_testing.reshape(x_testing.shape[0], 48, 48, 1)
 
-<<<<<<< HEAD
-optimizer = tf.keras.optimizers.RMSprop(learning_rate= 1e-4, momentum= 0.01)
-
-model = Sequential([
-    # Block 1
-    Conv2D(64, 3, 1, padding="same", activation="relu", name="block1_conv1", input_shape=(x_training.shape[1:])),
-    Conv2D(64, 3, 1, padding="same", activation="relu", name="block1_conv2"),
-    MaxPool2D(2, name="block1_pool"),
-    tf.keras.layers.Dropout(0.2),
-    # Block 2
-    Conv2D(128, 3, 1, padding="same", activation="relu", name="block2_conv1"),
-    Conv2D(128, 3, 1, padding="same", activation="relu", name="block2_conv2"),
-    MaxPool2D(2, name="block2_pool"),
-    tf.keras.layers.Dropout(0.2),
-    # Block 3, 
-    Conv2D(256, 3, 1, padding="same", activation="relu", name="block3_conv1"),
-    Conv2D(256, 3, 1, padding="same", activation="relu", name="block3_conv2"),
-    Conv2D(256, 3, 1, padding="same", activation="relu", name="block3_conv3"),
-    MaxPool2D(2, name="block3_pool"),
-    tf.keras.layers.Dropout(0.2),
-    # Block 4
-    Conv2D(512, 3, 1, padding="same", activation="relu", name="block4_conv1"),
-    Conv2D(512, 3, 1, padding="same", activation="relu", name="block4_conv2"),
-    Conv2D(512, 3, 1, padding="same", activation="relu", name="block4_conv3"),
-    MaxPool2D(2, name="block4_pool"),
-    tf.keras.layers.Dropout(0.2),
-    # Block 5
-    Conv2D(512, 3, 1, padding="same", activation="relu", name="block5_conv1"),
-    Conv2D(512, 3, 1, padding="same", activation="relu", name="block5_conv2"),
-    Conv2D(512, 3, 1, padding="same", activation="relu", name="block5_conv3"),
-    MaxPool2D(2, name="block5_pool"),
-    tf.keras.layers.Dropout(0.2),
-    tf.keras.layers.Flatten(),
-    tf.keras.layers.Dense(256, activation= "relu"),
-    tf.keras.layers.Dense(64, activation= "relu"),
-    tf.keras.layers.Dense(num_labels, activation= "softmax")
-])
-
-
-model.compile(loss=, optimizer= optimizer, metrics=['accuracy'])
-=======
 # model = Sequential([
 #     # Block 1
 #     Conv2D(64, 3, 1, padding="same", activation="relu", name="block1_conv1", input_shape=(x_training.shape[1:])),
@@ -199,7 +158,6 @@ learning_rate = 0.001
 
 adam = optimizers.Adam(lr = learning_rate)
 model.compile(optimizer = adam, loss = 'categorical_crossentropy', metrics = ['accuracy'])
->>>>>>> 26bdab7c3e51d1845f11d57f458a4fbbbd787a4a
 """callback_list = [
      tf.keras.callbacks.ModelCheckpoint(
             filepath="weights.e{epoch:02d}-" + \
