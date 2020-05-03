@@ -123,7 +123,7 @@ checkpointer = ModelCheckpoint("./your_model_checkpoints/weights.hd5",monitor='v
 model.fit(
           train_data,
           train_labels,
-          epochs = 2, # change this
+          epochs = epochs, # change this
           batch_size = batch_size,
           #validation_split = 0.2,
           validation_data=(test_data, test_labels),
