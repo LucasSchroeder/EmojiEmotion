@@ -42,11 +42,11 @@ x_training, y_training, x_testing, y_testing = [], [], [], []
 for index, row in df.iterrows():
     val=row['pixels'].split(" ")
     if 'Training' in row['Usage']:
-        x_training.append(np.array(val,'float32'))
+        x_training.append(np.array(val/255,'float32'))
         y_training.append(row['emotion'])
 
     elif 'PublicTest' in row['Usage']:
-        x_testing.append(np.array(val,'float32'))
+        x_testing.append(np.array(val/255,'float32'))
         y_testing.append(row['emotion'])
 
 x_training = np.array(x_training,'float32')
