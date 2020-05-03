@@ -39,21 +39,20 @@ from scipy import ndimage
 from skimage import io
 from skimage import img_as_float, img_as_ubyte
 from skimage.color import rgb2gray
+from keras.models import model_from_json
 
 # https://github.com/Paulymorphous/Facial-Emotion-Recognition
 ###
 # This method will load the weights that our CNN has produced
 def load_model(path):
-
-# 	json_file = open(path + 'model.json', 'r')
-# 	loaded_model_json = json_file.read()
-# 	json_file.close()
+	json_file = open(path + 'fer.json', 'r')
+	loaded_model_json = json_file.read()
+	json_file.close()
 	
-# 	model = model_from_json(loaded_model_json)
-# 	model.load_weights(path + "model.h5")
-# 	print("Loaded model from disk")
-# 	return model
-    return 0
+	model = model_from_json(loaded_model_json)
+	model.load_weights(path + "fer.h5")
+	print("Loaded model from disk")
+	return model
 
 # We will use this method to predict the emotion of a subject. It takes in 
 # the whole webcam image and then resizes it according to the bounding 
@@ -61,18 +60,20 @@ def load_model(path):
 # resize it to a 48x48 image, just like the image samples from the FER2013
 # dataset. 
 def predict_emotion(gray, x, y, w, h):
-	# face = np.expand_dims(np.expand_dims(np.resize(gray[y:y+w, x:x+h]/255.0, (48, 48)),-1), 0)
-	# prediction = model.predict([face])
+	face = np.expand_dims(np.expand_dims(np.resize(gray[y:y+w, x:x+h]/255.0, (48, 48)),-1), 0)
+	prediction = model.predict([face])
 
-	# return(int(np.argmax(prediction)), round(max(prediction[0])*100, 2))
-    return 0
+	return(int(np.argmax(prediction)), round(max(prediction[0])*100, 2))
+
 
 # Once we have a working model for our emotion recognition, we can use these lines to 
 # load the model, which will call load_model, defined above
 ###############################################################################################
-# path = "Models/"
-# model = load_model(path)
+path = "Models/"
+model = load_model(path)
 ###############################################################################################
+
+emotion_dict = {0: "Angry", 1: "Disgust", 2: "Fear", 3: "Happy", 4: "Sad", 5: "Surprise", 6: "Neutral"}
 
 
 p = "shape_predictor_68_face_landmarks.dat"
@@ -114,8 +115,10 @@ while run_cam:
             ## THE EMOTION OF THE CURRENT FACE. WE CAN THEN USE A SERIES OF SWITCH OR IF STATEMENTS TO
             ## PASTE ON THE CORRECT EMOJI 
             ###############################################################################################
-            # emotion_id, confidence = predict_emotion(gray, cornerX, cornerY, squareWidth, squareHeight)
+            emotion_id, confidence = predict_emotion(gray, cornerX, cornerY, squareWidth, squareHeight)
             ###############################################################################################
+            emotion = emotion_dict[emotion_id]
+            cv2.putText(image, emotion,(cornerX+20,cornerY-100), cv2.FONT_HERSHEY_SIMPLEX, 1.5, (255,255,255), lineType=cv2.LINE_AA)
 
 
             # Predict the shape of the face and transfom it to numpy array
