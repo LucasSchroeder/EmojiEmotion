@@ -59,6 +59,8 @@ y_testing = np.divide(np.subtract(y_testing, np.mean(y_testing)), np.std(y_testi
 x_training = x_training.reshape(x_training.shape[0], 48, 48, 1)
 x_testing = x_testing.reshape(x_testing.shape[0], 48, 48, 1)
 
+optimizer = tf.keras.optimizers.RMSprop(learning_rate= 1e-4, momentum= 0.01)
+
 model = Sequential([
     # Block 1
     Conv2D(64, 3, 1, padding="same", activation="relu", name="block1_conv1", input_shape=(x_training.shape[1:])),
@@ -95,7 +97,7 @@ model = Sequential([
 ])
 
 
-model.compile(loss=categorical_crossentropy, optimizer=Adam(), metrics=['accuracy'])
+model.compile(loss=, optimizer= optimizer, metrics=['accuracy'])
 """callback_list = [
      tf.keras.callbacks.ModelCheckpoint(
             filepath="weights.e{epoch:02d}-" + \
