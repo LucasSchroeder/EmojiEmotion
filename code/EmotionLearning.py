@@ -152,10 +152,10 @@ model.add(Dense(7, activation='softmax'))
 
 
 learning_rate = 0.001
-model.compile(loss = 'categorical_crossentropy', optimizer=Adam(lr= learning_rate), metrics=['accuracy'])
+#model.compile(loss = 'categorical_crossentropy', optimizer=Adam(lr= learning_rate), metrics=['accuracy'])
 
-# adam = optimizers.Adam(lr = learning_rate)
-# model.compile(optimizer = adam, loss = 'categorical_crossentropy', metrics = ['accuracy'])
+adam = optimizers.Adam(lr = learning_rate)
+model.compile(optimizer = adam, loss = 'categorical_crossentropy', metrics = ['accuracy'])
 """callback_list = [
      tf.keras.callbacks.ModelCheckpoint(
             filepath="weights.e{epoch:02d}-" + \
