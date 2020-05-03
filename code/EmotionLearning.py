@@ -50,9 +50,11 @@ for index, row in df.iterrows():
         y_testing.append(row['emotion'])
 
 x_training = np.array(x_training,'float32')/255
-y_training = np.array(y_training,'float32')
+print(x_training[0])
+y_training = np.array(y_training,'float32')/255
+print(y_training[0])
 x_testing = np.array(x_testing,'float32')/255
-y_testing = np.array(y_testing,'float32')
+y_testing = np.array(y_testing,'float32')/255
 
 y_training=to_categorical(y_training, num_classes=num_labels)
 y_testing=to_categorical(y_testing, num_classes=num_labels)
