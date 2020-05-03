@@ -49,11 +49,11 @@ for index, row in df.iterrows():
         x_testing.append(np.array(val,'float32'))
         y_testing.append(row['emotion'])
 
-x_training = np.array(x_training,'float32')/255
+x_training = np.array(x_training,'float32')/255 ####### THIS LINE WAS GIVING A NEGATIVE LOSS
 print(x_training[0])
 y_training = np.array(y_training,'float32')
 print(y_training[0])
-x_testing = np.array(x_testing,'float32')/255
+x_testing = np.array(x_testing,'float32')/255 ####### THIS LINE WAS GIVING A NEGATIVE LOSS
 y_testing = np.array(y_testing,'float32')
 
 y_training=to_categorical(y_training, num_classes=num_labels)
@@ -62,10 +62,10 @@ y_testing=to_categorical(y_testing, num_classes=num_labels)
 #preprocess
 
 x_training = np.divide(np.subtract(x_training, np.mean(x_training)), np.std(x_training))
-y_training = np.divide(np.subtract(y_training, np.mean(y_training)), np.std(y_training))
+#y_training = np.divide(np.subtract(y_training, np.mean(y_training)), np.std(y_training)) ####### THIS LINE WAS GIVING A NEGATIVE LOSS
 
 x_testing = np.divide(np.subtract(x_testing, np.mean(x_testing)), np.std(x_testing))
-y_testing = np.divide(np.subtract(y_testing, np.mean(y_testing)), np.std(y_testing))
+#y_testing = np.divide(np.subtract(y_testing, np.mean(y_testing)), np.std(y_testing)) ####### THIS LINE WAS GIVING A NEGATIVE LOSS
 
 x_training = x_training.reshape(x_training.shape[0], 48, 48, 1)
 x_testing = x_testing.reshape(x_testing.shape[0], 48, 48, 1)
