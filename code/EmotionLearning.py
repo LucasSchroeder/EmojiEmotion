@@ -36,7 +36,7 @@ from tensorboard_utils import ImageLabelingLogger, ConfusionMatrixLogger
 #install pandas, np_utils 
 
 
-df=pd.read_csv('../../EmojiData/fer2013.csv')
+df=pd.read_csv('fer2013.csv')
 df.dropna()
 
 
