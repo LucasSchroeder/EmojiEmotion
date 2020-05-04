@@ -162,9 +162,9 @@ while run_cam:
 
                 # cv2.rectangle(image,(x1,y1), (x2,y2),(255,255,255),1)
 
-                # for c in range(0, 3):
-                #     image[y1:y2, x1:x2, c] = (alpha_s * emoji[:, :, c] +
-                #                             alpha_l * image[y1:y2, x1:x2, c])
+                for c in range(0, 3):
+                    image[y1:y2, x1:x2, c] = (alpha_s * emoji[:, :, c] +
+                                            alpha_l * image[y1:y2, x1:x2, c])
 
     # show the gray image
     cv2.namedWindow('image',cv2.WINDOW_NORMAL)
