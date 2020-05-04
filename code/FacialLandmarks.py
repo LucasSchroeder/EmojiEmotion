@@ -61,12 +61,8 @@ def load_model(path):
 # dataset. 
 def predict_emotion(gray, x, y, w, h):
     
-    face = np.expand_dims(np.expand_dims(np.resize(gray[y:y+w, x:x+h]/255, (48, 48)),-1), 0)
-
-    #face = cv2.imread('EmojiImages/NeutralEmoji.png', -1)
-    #face = cv2.imread('surprise_test.jpg',-1)
-    #face = np.expand_dims(np.expand_dims(np.resize(cv2.imread('surprise_test.jpg',0)/255.0, (48, 48)),-1), 0)
-    #face =face
+    face = np.expand_dims(np.expand_dims(np.resize(gray[y:y+w, x:x+h], (48, 48)),-1), 0)
+    #face = np.expand_dims(np.expand_dims(np.resize(cv2.imread('surprise.png',0), (48, 48)),-1), 0)
     prediction = model.predict([face])
 
     return(int(np.argmax(prediction)), round(max(prediction[0])*100, 2))
@@ -81,7 +77,6 @@ model = load_model(path)
 
 emotion_dict = {0: "Angry", 1: "Disgust", 2: "Fear", 3: "Happy", 4: "Sad", 5: "Surprise", 6: "Neutral"}
 emoji_path_dict = {0: "EmojiImages/AngryEmoji.png", 1: "EmojiImages/DisgustEmoji.png", 2: "EmojiImages/ScaredEmoji.png", 3: "EmojiImages/SmilingEmoji.png", 4: "EmojiImages/SadEmoji.png", 5: "EmojiImages/SurprisedEmoji.png", 6: "EmojiImages/NeutralEmoji.png"}
-colour_cycle = ((255, 0, 0), (0, 255, 0), (0, 0, 255), (230, 230, 250))
 
 p = "shape_predictor_68_face_landmarks.dat"
 detector = dlib.get_frontal_face_detector()
@@ -107,7 +102,10 @@ while run_cam:
     _, image = cap.read()
     if drawEmoji == True:
         gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+        gray = cv2.flip(image,1)
+        image = cv2.flip(image,1)
         
+
         # Get faces into webcam's image
         rects = detector(gray, 0)
         
@@ -117,19 +115,14 @@ while run_cam:
             # compute the bounding box of the face and draw it on the image
             # https://www.pyimagesearch.com/2018/04/02/faster-facial-landmark-detector-with-dlib/
             (cornerX, cornerY, squareWidth, squareHeight) = face_utils.rect_to_bb(rect)
-            cornerX = cornerX
-            cornerY = cornerY
-            squareWidth = squareWidth
-            squareHeight = squareHeight
+            cornerX = cornerX +10
+            cornerY = cornerY -10
+            squareWidth = squareWidth - 20
+            squareHeight = squareHeight +10
             cv2.rectangle(image,(cornerX,cornerY), (cornerX+squareWidth,cornerY+squareHeight),(255,255,0),1)
             
-            ## ONCE WE HAVE A WORKING SET OF WEIGHTS FOR THE EMOTION CLASSIFIER, THIS LINE WILL PREDICT 
-            ## THE EMOTION OF THE CURRENT FACE. WE CAN THEN USE A SERIES OF SWITCH OR IF STATEMENTS TO
-            ## PASTE ON THE CORRECT EMOJI
-            ###############################################################################################
             emotion_id, confidence = predict_emotion(gray, cornerX, cornerY, squareWidth, squareHeight)
-            ###############################################################################################
-            #print(emotion_id)
+            print("Confidence of prediction: ", confidence)
 
             emotion = emotion_dict[emotion_id]
             cv2.putText(image, emotion,(cornerX+20,cornerY-50), cv2.FONT_HERSHEY_SIMPLEX, 1.5, (255,255,255), lineType=cv2.LINE_AA)
@@ -144,20 +137,10 @@ while run_cam:
             # Draw on our image, all the cordinate points (x,y) 
             for (x, y) in shape:
                 cv2.circle(image, (x, y), 2, (0, 255, 0), -1)
-
-                #max_index = np.argmax(predictions[0])
-                #emotions = ('angry', 'disgust', 'fear', 'happy', 'sad', 'surprise', 'neutral')
-                #predicted_emotion = emotions[max_index]
         
-            #cv2.circle(image, (shape[28,0], shape[34,1]), 2, (0, 255, 0), -1)
-            # print(shape.shape)
             point1 = shape[29,:]
             point2= shape[(len(shape[:,0]))-1]
-            # print(point1)
-            # print(point2)
-            #gray = cv2.flip(image,1)
-            # Select the region in the background where we want to add the image and add the images using cv2.addWeighted()
-
+            
             # Get the standard deviation between points to calculate the ratio relating to how far you are from the camera
             ratio = np.std(shape[:,0])
             disp = int(2.8*ratio)
@@ -166,14 +149,6 @@ while run_cam:
             # Check boundaries to prevent segmentation fault
             if (0 < point1[0]-disp < image_width and 0 < point1[0]+disp < image_width
             and 0 < point1[1]-disp < image_height and 0 < point1[1]+disp < image_height):
-                # added_image = cv2.addWeighted(image[point1[1]-disp:point1[1]+disp,point1[0]-disp:point1[0]+disp,:],alpha,overlaidImage[0:(disp*2),0:(disp*2),:],1-alpha,0)
-                # Change the region with the result
-                # image[point1[1]-disp:point1[1]+disp,point1[0]-disp:point1[0]+disp] = added_image
-                
-                # Source on how to overlay images on top of each other
-                # https://stackoverflow.com/questions/14063070/overlay-a-smaller-image-on-a-larger-image-python-opencv
-
-                # Suprised Emoji is from https://emojiisland.com/products/surprised-emoji-png
                 emoji = cv2.imread(Emoji_File_Path, -1)
                 emoji = cv2.resize(emoji, (2*disp,2*disp))
 
@@ -185,18 +160,18 @@ while run_cam:
                 alpha_s = emoji[:, :, 3] / 255.0
                 alpha_l = 1.0 - alpha_s
 
-                for c in range(0, 3):
-                    image[y1:y2, x1:x2, c] = (alpha_s * emoji[:, :, c] +
-                                            alpha_l * image[y1:y2, x1:x2, c])
+                # cv2.rectangle(image,(x1,y1), (x2,y2),(255,255,255),1)
+
+                # for c in range(0, 3):
+                #     image[y1:y2, x1:x2, c] = (alpha_s * emoji[:, :, c] +
+                #                             alpha_l * image[y1:y2, x1:x2, c])
 
     # show the gray image
     cv2.namedWindow('image',cv2.WINDOW_NORMAL)
     width = image.shape[1]
     height = image.shape[0]
-    #cv2.resizeWindow('image', 200, 200)
     
     cv2.imshow("image", image)
-    #cv2.imshow("Output")
     
     # If you are using a 64-bit machine, you have to modify 
     # cv2.waitKey(0) line as follows : k = cv2.waitKey(0) & 0xFF
