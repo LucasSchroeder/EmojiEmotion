@@ -200,7 +200,7 @@ callback_list = [ModelCheckpoint(filepath="weights.e{epoch:02d}-" + \
         TensorBoard(log_dir=tboard_log_dir, histogram_freq=0, write_graph=True, write_images=True)
         # TensorBoard(log_dir='Graphs',
         #      update_freq='batch',
-        #      profile_batch=0)
+        #      profile_batch=0) 
         #ImageLabelingLogger(x_training)
     ]
     
