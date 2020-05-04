@@ -39,6 +39,47 @@ from scipy import ndimage
 from skimage import io
 from skimage import img_as_float, img_as_ubyte
 from skimage.color import rgb2gray
+<<<<<<< HEAD
+=======
+from keras.models import model_from_json
+
+# https://github.com/Paulymorphous/Facial-Emotion-Recognition
+###
+# This method will load the weights that our CNN has produced
+def load_model(path):
+	json_file = open(path + 'fer.json', 'r')
+	loaded_model_json = json_file.read()
+	json_file.close()
+	
+	model = model_from_json(loaded_model_json)
+	model.load_weights(path + "fer.h5")
+	print("Loaded model from disk")
+	return model
+
+# We will use this method to predict the emotion of a subject. It takes in 
+# the whole webcam image and then resizes it according to the bounding 
+# box around the face. Before using the model to predict the emotion, we 
+# resize it to a 48x48 image, just like the image samples from the FER2013
+# dataset. 
+def predict_emotion(gray, x, y, w, h):
+    
+    face = np.expand_dims(np.expand_dims(np.resize(gray[y:y+w, x:x+h], (48, 48)),-1), 0)
+    #face = np.expand_dims(np.expand_dims(np.resize(cv2.imread('surprise.png',0), (48, 48)),-1), 0)
+    prediction = model.predict([face])
+
+    return(int(np.argmax(prediction)), round(max(prediction[0])*100, 2))
+
+
+# Once we have a working model for our emotion recognition, we can use these lines to 
+# load the model, which will call load_model, defined above
+###############################################################################################
+path = "Models/"
+model = load_model(path)
+###############################################################################################
+
+emotion_dict = {0: "Angry", 1: "Disgust", 2: "Fear", 3: "Happy", 4: "Sad", 5: "Surprise", 6: "Neutral"}
+emoji_path_dict = {0: "EmojiImages/AngryEmoji.png", 1: "EmojiImages/DisgustEmoji.png", 2: "EmojiImages/ScaredEmoji.png", 3: "EmojiImages/SmilingEmoji.png", 4: "EmojiImages/SadEmoji.png", 5: "EmojiImages/SurprisedEmoji.png", 6: "EmojiImages/NeutralEmoji.png"}
+>>>>>>> 29d4080a6a7ebba39791a6a6954acdde5b5961a3
 
 p = "shape_predictor_68_face_landmarks.dat"
 detector = dlib.get_frontal_face_detector()
@@ -57,6 +98,7 @@ cap = cv2.VideoCapture(0)
 while run_cam:
     # Get the image from the webcam and convert it into a gray image scale
     _, image = cap.read()
+<<<<<<< HEAD
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     
     # Get faces into webcam's image
@@ -83,15 +125,85 @@ while run_cam:
         added_image = cv2.addWeighted(image[point1[1]-50:point1[1]+50,point1[0]-50:point1[0]+50,:],alpha,overlaidImage[0:100,0:100,:],1-alpha,0)
         # Change the region with the result
         image[point1[1]-50:point1[1]+50,point1[0]-50:point1[0]+50] = added_image
+=======
+    if drawEmoji == True:
+        gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+        gray = cv2.flip(image,1)
+        image = cv2.flip(image,1)
+        
+
+        # Get faces into webcam's image
+        rects = detector(gray, 0)
+        
+
+        # For each detected face, find the landmarks.
+        for (i, rect) in enumerate(rects):
+            # compute the bounding box of the face and draw it on the image
+            # https://www.pyimagesearch.com/2018/04/02/faster-facial-landmark-detector-with-dlib/
+            (cornerX, cornerY, squareWidth, squareHeight) = face_utils.rect_to_bb(rect)
+            cornerX = cornerX +10
+            cornerY = cornerY -10
+            squareWidth = squareWidth - 20
+            squareHeight = squareHeight +10
+            cv2.rectangle(image,(cornerX,cornerY), (cornerX+squareWidth,cornerY+squareHeight),(255,255,0),1)
+            
+            emotion_id, confidence = predict_emotion(gray, cornerX, cornerY, squareWidth, squareHeight)
+            print("Confidence of prediction: ", confidence)
+
+            emotion = emotion_dict[emotion_id]
+            cv2.putText(image, emotion,(cornerX+20,cornerY-50), cv2.FONT_HERSHEY_SIMPLEX, 1.5, (255,255,255), lineType=cv2.LINE_AA)
+            Emoji_File_Path= emoji_path_dict[emotion_id]
+
+
+            # Predict the shape of the face and transfom it to numpy array
+            #gray = cv2.flip(image,1)
+            shape = predictor(gray, rect)
+            shape = face_utils.shape_to_np(shape)
+        
+            # Draw on our image, all the cordinate points (x,y) 
+            for (x, y) in shape:
+                cv2.circle(image, (x, y), 2, (0, 255, 0), -1)
+        
+            point1 = shape[29,:]
+            point2= shape[(len(shape[:,0]))-1]
+            
+            # Get the standard deviation between points to calculate the ratio relating to how far you are from the camera
+            ratio = np.std(shape[:,0])
+            disp = int(2.8*ratio)
+            image_width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+            image_height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+            # Check boundaries to prevent segmentation fault
+            if (0 < point1[0]-disp < image_width and 0 < point1[0]+disp < image_width
+            and 0 < point1[1]-disp < image_height and 0 < point1[1]+disp < image_height):
+                emoji = cv2.imread(Emoji_File_Path, -1)
+                emoji = cv2.resize(emoji, (2*disp,2*disp))
+
+                x_offset = point1[0] - disp
+                y_offset = point1[1] - disp
+                y1, y2 = y_offset, y_offset + emoji.shape[0]
+                x1, x2 = x_offset, x_offset + emoji.shape[1]
+
+                alpha_s = emoji[:, :, 3] / 255.0
+                alpha_l = 1.0 - alpha_s
+
+                # cv2.rectangle(image,(x1,y1), (x2,y2),(255,255,255),1)
+
+                for c in range(0, 3):
+                    image[y1:y2, x1:x2, c] = (alpha_s * emoji[:, :, c] +
+                                            alpha_l * image[y1:y2, x1:x2, c])
+>>>>>>> 29d4080a6a7ebba39791a6a6954acdde5b5961a3
 
     # show the gray image
     cv2.namedWindow('image',cv2.WINDOW_NORMAL)
     width = image.shape[1]
     height = image.shape[0]
+<<<<<<< HEAD
     #cv2.resizeWindow('image', 200, 200)
 
+=======
+    
+>>>>>>> 29d4080a6a7ebba39791a6a6954acdde5b5961a3
     cv2.imshow("image", image)
-    #cv2.imshow("Output")
     
     # If you are using a 64-bit machine, you have to modify 
     # cv2.waitKey(0) line as follows : k = cv2.waitKey(0) & 0xFF
