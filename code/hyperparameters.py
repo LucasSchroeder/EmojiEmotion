@@ -23,7 +23,7 @@ num_labels = 7
 # num_epochs is the number of epochs. If you experiment with more
 # complex networks you might need to increase this. Likewise if you add
 # regularization that slows training.
-epochs = 30
+epochs = 50
 
 # batch_size defines the number of training examples per batch:
 batch_size = 32

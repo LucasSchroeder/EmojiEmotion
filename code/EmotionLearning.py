@@ -147,18 +147,6 @@ if not os.path.exists("your_model_checkpoints"):
 
 adam = Adam(lr = hp.learning_rate)
 model.compile(optimizer = adam, loss = 'categorical_crossentropy', metrics = ['accuracy'])
-"""callback_list = [
-     tf.keras.callbacks.ModelCheckpoint(
-            filepath="weights.e{epoch:02d}-" + \
-                    "acc{val_sparse_categorical_accuracy:.4f}.h5",
-            monitor='val_sparse_categorical_accuracy',
-            save_best_only=True,
-            save_weights_only=True),
-        tf.keras.callbacks.TensorBoard(
-            update_freq='batch',
-            profile_batch=0),
-        ImageLabelingLogger(x_training)
-    ] """
     
 callback_list = [ModelCheckpoint("your_model_checkpoints/weights.hd5",monitor='val_loss', verbose=1, save_best_only=True,save_weights_only=True),
     
