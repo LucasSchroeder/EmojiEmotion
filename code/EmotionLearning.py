@@ -3,7 +3,7 @@ EmojiEmotion - CNN
 CS1430 - Computer Vision
 Brown University
 """
-
+import os
 import numpy as np
 import pandas as pd
 import tensorflow as tf
@@ -162,7 +162,8 @@ model.add(Dropout(0.5))
 model.add(Dense(7, activation='softmax'))"""
 
 
-
+if not os.path.exists("./your_model_checkpoints/"):
+        os.makedirs("./your_model_checkpoints/")
 
 #model.compile(loss = 'categorical_crossentropy', optimizer=Adam(lr= hp.learning_rate), metrics=['accuracy'])
 
