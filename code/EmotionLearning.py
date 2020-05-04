@@ -23,19 +23,15 @@ from keras.models import Sequential
 #from keras.layers import MaxPooling2D # Maxpooling function
 from keras.layers.normalization import BatchNormalization
 from keras.regularizers import l2
+import hyperparameters as hp
 #from tensorboard.utils import ImageLabelingLogger, ConfusionMatrixLogger
 
 #install pandas, np_utils 
 
 
-df=pd.read_csv('fer2013.csv')
+df=pd.read_csv('../../EmojiData/fer2013.csv')
 df.dropna()
 
-num_features = 64
-num_labels = 7
-batch_size = 32
-epochs = 30
-width, height = 48, 48
 
 x_training, y_training, x_testing, y_testing = [], [], [], []
 
@@ -56,8 +52,8 @@ print(y_training[0])
 x_testing = np.array(x_testing,'float32')/255 ####### THIS LINE WAS GIVING A NEGATIVE LOSS
 y_testing = np.array(y_testing,'float32')
 
-y_training=to_categorical(y_training, num_classes=num_labels)
-y_testing=to_categorical(y_testing, num_classes=num_labels)
+y_training=to_categorical(y_training, num_classes=hp.num_labels)
+y_testing=to_categorical(y_testing, num_classes=hp.num_labels)
 
 #preprocess
 
@@ -109,7 +105,7 @@ model.add(Dense(512, activation= "relu"))
 model.add(Dense(256, activation= "relu"))
 model.add(Dense(128, activation= "relu"))
 model.add(Dense(64, activation= "relu"))
-model.add(Dense(num_labels, activation= "softmax"))
+model.add(Dense(hp.num_labels, activation= "softmax"))
 
 """
 model = Sequential()
@@ -160,10 +156,10 @@ model.add(Dense(7, activation='softmax'))"""
 
 
 
-learning_rate = 0.001
-#model.compile(loss = 'categorical_crossentropy', optimizer=Adam(lr= learning_rate), metrics=['accuracy'])
 
-adam = optimizers.Adam(lr = learning_rate)
+#model.compile(loss = 'categorical_crossentropy', optimizer=Adam(lr= hp.learning_rate), metrics=['accuracy'])
+
+adam = optimizers.Adam(lr = hp.learning_rate)
 model.compile(optimizer = adam, loss = 'categorical_crossentropy', metrics = ['accuracy'])
 """callback_list = [
      tf.keras.callbacks.ModelCheckpoint(
@@ -179,7 +175,7 @@ model.compile(optimizer = adam, loss = 'categorical_crossentropy', metrics = ['a
     ] """
 #this is a test -- new branch 
 print(model.summary())
-model.fit(x_training, y_training, batch_size=batch_size, epochs=epochs, verbose=1, validation_data=(x_testing, y_testing), shuffle=True)
+model.fit(x_training, y_training, batch_size=hp.batch_size, epochs=hp.epochs, verbose=1, validation_data=(x_testing, y_testing), shuffle=True)
 
 fer_json = model.to_json()
 with open("fer.json", "w") as json_file:
