@@ -185,9 +185,9 @@ tboard_log_dir = os.path.join("logs",NAME)
         ImageLabelingLogger(x_training)
     ] """
     #[ModelCheckpoint("./your_model_checkpoints/weights.hd5",monitor='val_loss', verbose=1, save_best_only=True),TensorBoard(log_dir='./Graph', histogram_freq=0, write_graph=True, write_images=True)]
-callback_list = [ModelCheckpoint("./your_model_checkpoints/weights.hd5",monitor='val_loss', verbose=1, save_best_only=True),
-    #ModelCheckpoint(filepath="weights.e{epoch:02d}-" + \
-      #              "acc{val_loss:.4f}.h5",monitor='val_loss', verbose=1, save_best_only=True,save_weights_only=True),
+    #ModelCheckpoint("./your_model_checkpoints/weights.hd5",monitor='val_loss', verbose=1, save_best_only=True),
+callback_list = [ModelCheckpoint(filepath="weights.e{epoch:02d}-" + \
+                    "acc{val_loss:.4f}.h5",monitor='val_loss', verbose=1, save_best_only=True,save_weights_only=True),
     # ModelCheckpoint(
     #         filepath="weights.e{epoch:02d}-" + \
     #                 "acc{val_sparse_categorical_accuracy:.4f}.h5",
@@ -197,7 +197,7 @@ callback_list = [ModelCheckpoint("./your_model_checkpoints/weights.hd5",monitor=
     
         # If you want to visualize the files created during training, run in your terminal
         # tensorboard --logdir path_to_current_dir/Graph 
-        TensorBoard(log_dir='tboard_log_dir', histogram_freq=0, write_graph=True, write_images=True)
+        TensorBoard(log_dir=tboard_log_dir, histogram_freq=0, write_graph=True, write_images=True)
         # TensorBoard(log_dir='Graphs',
         #      update_freq='batch',
         #      profile_batch=0)
