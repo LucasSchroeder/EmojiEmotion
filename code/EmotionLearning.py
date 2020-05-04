@@ -42,7 +42,7 @@ for index, row in df.iterrows():
         y_training.append(row['emotion'])
 
     elif 'PublicTest' in row['Usage']:
-        x_testing.append(np.array(val,'float32'))
+        x_testing.append(np.array(val,'float32')) #this is a test
         y_testing.append(row['emotion'])
 
 x_training = np.array(x_training,'float32')/255 ####### THIS LINE WAS GIVING A NEGATIVE LOSS
