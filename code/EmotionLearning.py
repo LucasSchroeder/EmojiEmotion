@@ -177,7 +177,7 @@ model.compile(optimizer = adam, loss = 'categorical_crossentropy', metrics = ['a
             profile_batch=0),
         ImageLabelingLogger(x_training)
     ] """
-
+#this is a test -- new branch 
 print(model.summary())
 model.fit(x_training, y_training, batch_size=batch_size, epochs=epochs, verbose=1, validation_data=(x_testing, y_testing), shuffle=True)
 
