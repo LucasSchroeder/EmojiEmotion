@@ -8,7 +8,6 @@ import numpy as np
 import pandas as pd
 import tensorflow as tf
 import time
-# #import hyperparameters as hp
 from tensorflow.keras.layers import Conv2D, MaxPool2D, Dropout, Flatten, Dense
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.optimizers import Adam
@@ -17,24 +16,8 @@ from tensorflow.keras.utils import to_categorical
 from tensorflow.keras.layers import BatchNormalization
 from tensorflow.keras.callbacks import TensorBoard
 from tensorflow.keras.callbacks import ModelCheckpoint
-
-
-
-# from keras import optimizers
-# from keras.callbacks import ModelCheckpoint
-# from keras.callbacks import TensorBoard
-# from keras.utils import to_categorical
-# from keras.layers import *
-# from keras.models import Sequential
-# #from keras.layers import MaxPooling2D # Maxpooling function
-# from keras.layers.normalization import BatchNormalization
-
-
-#from keras.regularizers import l2
 import hyperparameters as hp
 from tensorboard_utils import ImageLabelingLogger, ConfusionMatrixLogger
-
-#install pandas, np_utils 
 
 
 df=pd.read_csv('fer2013.csv')
@@ -50,26 +33,22 @@ for index, row in df.iterrows():
         y_training.append(row['emotion'])
 
     elif 'PublicTest' in row['Usage']:
-        x_testing.append(np.array(val,'float32')) #this is a test
+        x_testing.append(np.array(val,'float32'))
         y_testing.append(row['emotion'])
 
-x_training = np.array(x_training,'float32')/255 ####### THIS LINE WAS GIVING A NEGATIVE LOSS
-print(x_training[0])
+x_training = np.array(x_training,'float32')/255 
 y_training = np.array(y_training,'float32')
-print(y_training[0])
-x_testing = np.array(x_testing,'float32')/255 ####### THIS LINE WAS GIVING A NEGATIVE LOSS
+
+x_testing = np.array(x_testing,'float32')/255 
 y_testing = np.array(y_testing,'float32')
 
 y_training=to_categorical(y_training, num_classes=hp.num_labels)
 y_testing=to_categorical(y_testing, num_classes=hp.num_labels)
 
 #preprocess
-
 x_training = np.divide(np.subtract(x_training, np.mean(x_training)), np.std(x_training))
-#y_training = np.divide(np.subtract(y_training, np.mean(y_training)), np.std(y_training)) ####### THIS LINE WAS GIVING A NEGATIVE LOSS
 
 x_testing = np.divide(np.subtract(x_testing, np.mean(x_testing)), np.std(x_testing))
-#y_testing = np.divide(np.subtract(y_testing, np.mean(y_testing)), np.std(y_testing)) ####### THIS LINE WAS GIVING A NEGATIVE LOSS
 
 x_training = x_training.reshape(x_training.shape[0], 48, 48, 1)
 x_testing = x_testing.reshape(x_testing.shape[0], 48, 48, 1)
@@ -162,16 +141,12 @@ model.add(Dense(64, activation='relu'))
 model.add(Dropout(0.5))
 model.add(Dense(7, activation='softmax'))"""
 
-
+# create your_model_checkpoints directory
 if not os.path.exists("your_model_checkpoints"):
         os.makedirs("your_model_checkpoints")
 
-#model.compile(loss = 'categorical_crossentropy', optimizer=Adam(lr= hp.learning_rate), metrics=['accuracy'])
-
 adam = Adam(lr = hp.learning_rate)
 model.compile(optimizer = adam, loss = 'categorical_crossentropy', metrics = ['accuracy'])
-# NAME = 'Emoji-EMotion-cnn-{}'.format(int(time.time()))
-# tboard_log_dir = os.path.join("logs",NAME)
 """callback_list = [
      tf.keras.callbacks.ModelCheckpoint(
             filepath="weights.e{epoch:02d}-" + \
@@ -184,29 +159,14 @@ model.compile(optimizer = adam, loss = 'categorical_crossentropy', metrics = ['a
             profile_batch=0),
         ImageLabelingLogger(x_training)
     ] """
-    #[ModelCheckpoint("./your_model_checkpoints/weights.hd5",monitor='val_loss', verbose=1, save_best_only=True),TensorBoard(log_dir='./Graph', histogram_freq=0, write_graph=True, write_images=True)]
-    #ModelCheckpoint("./your_model_checkpoints/weights.hd5",monitor='val_loss', verbose=1, save_best_only=True),
-    #ModelCheckpoint(filepath="weights.e{epoch:02d}-" + \
-                   # "acc{val_loss:.4f}.h5",monitor='val_loss', verbose=1, save_best_only=True,save_weights_only=True),
+    
 callback_list = [ModelCheckpoint("your_model_checkpoints/weights.hd5",monitor='val_loss', verbose=1, save_best_only=True,save_weights_only=True),
-                
-    # ModelCheckpoint(
-    #         filepath="weights.e{epoch:02d}-" + \
-    #                 "acc{val_sparse_categorical_accuracy:.4f}.h5",
-    #         monitor='val_sparse_categorical_accuracy',
-    #         save_best_only=True,
-    #         save_weights_only=True),
     
         # If you want to visualize the files created during training, run in your terminal
         # tensorboard --logdir path_to_current_dir/Graph 
         TensorBoard(log_dir="logs", histogram_freq=0, write_graph=True, write_images=True)
-        # TensorBoard(log_dir='Graphs',
-        #      update_freq='batch',
-        #      profile_batch=0) 
-        #ImageLabelingLogger(x_training)
     ]
     
-#this is a test -- new branch 
 print(model.summary())
 model.fit(x_training, y_training, batch_size=hp.batch_size, epochs=hp.epochs, verbose=1, validation_data=(x_testing, y_testing), shuffle=True, callbacks=callback_list)
 
