@@ -8,23 +8,30 @@ import numpy as np
 import pandas as pd
 import tensorflow as tf
 # #import hyperparameters as hp
-# from tensorflow.keras.layers import \
-#         Conv2D, MaxPool2D, Dropout, Flatten, Dense
+from tensorflow.keras.layers import Conv2D, MaxPool2D, Dropout, Flatten, Dense
 from tensorflow.keras.models import Sequential
-#from tensorflow.keras.optimizers import Adam
-#from tensorflow.keras.losses import categorical_crossentropy
-#from tensorflow.keras.utils import to_categorical
+from tensorflow.keras.optimizers import Adam
+from tensorflow.keras.losses import categorical_crossentropy
+from tensorflow.keras.utils import to_categorical
+from tensorflow.keras.layers import BatchNormalization
+from tensorflow.keras.callbacks import TensorBoard
+from tensorflow.keras.callbacks import ModelCheckpoint
 
 
-from keras import optimizers
-from keras.utils import to_categorical
-from keras.layers import *
-from keras.models import Sequential
-#from keras.layers import MaxPooling2D # Maxpooling function
-from keras.layers.normalization import BatchNormalization
-from keras.regularizers import l2
+
+# from keras import optimizers
+# from keras.callbacks import ModelCheckpoint
+# from keras.callbacks import TensorBoard
+# from keras.utils import to_categorical
+# from keras.layers import *
+# from keras.models import Sequential
+# #from keras.layers import MaxPooling2D # Maxpooling function
+# from keras.layers.normalization import BatchNormalization
+
+
+#from keras.regularizers import l2
 import hyperparameters as hp
-#from tensorboard.utils import ImageLabelingLogger, ConfusionMatrixLogger
+from tensorboard_utils import ImageLabelingLogger, ConfusionMatrixLogger
 
 #install pandas, np_utils 
 
@@ -159,7 +166,7 @@ model.add(Dense(7, activation='softmax'))"""
 
 #model.compile(loss = 'categorical_crossentropy', optimizer=Adam(lr= hp.learning_rate), metrics=['accuracy'])
 
-adam = optimizers.Adam(lr = hp.learning_rate)
+adam = Adam(lr = hp.learning_rate)
 model.compile(optimizer = adam, loss = 'categorical_crossentropy', metrics = ['accuracy'])
 """callback_list = [
      tf.keras.callbacks.ModelCheckpoint(
@@ -173,9 +180,27 @@ model.compile(optimizer = adam, loss = 'categorical_crossentropy', metrics = ['a
             profile_batch=0),
         ImageLabelingLogger(x_training)
     ] """
+    #[ModelCheckpoint("./your_model_checkpoints/weights.hd5",monitor='val_loss', verbose=1, save_best_only=True),TensorBoard(log_dir='./Graph', histogram_freq=0, write_graph=True, write_images=True)]
+callback_list = [
+    ModelCheckpoint(
+            filepath="weights.e{epoch:02d}-" + \
+                    "acc{val_sparse_categorical_accuracy:.4f}.h5",
+            monitor='val_sparse_categorical_accuracy',
+            save_best_only=True,
+            save_weights_only=True),
+    
+        # If you want to visualize the files created during training, run in your terminal
+        # tensorboard --logdir path_to_current_dir/Graph 
+        TensorBoard(log_dir='./Graph', histogram_freq=0, write_graph=True, write_images=True)
+        # tf.keras.callbacks.TensorBoard(
+        #     update_freq='batch',
+        #     profile_batch=0)
+        #ImageLabelingLogger(x_training)
+    ]
+    
 #this is a test -- new branch 
 print(model.summary())
-model.fit(x_training, y_training, batch_size=hp.batch_size, epochs=hp.epochs, verbose=1, validation_data=(x_testing, y_testing), shuffle=True)
+model.fit(x_training, y_training, batch_size=hp.batch_size, epochs=hp.epochs, verbose=1, validation_data=(x_testing, y_testing), shuffle=True, callbacks=callback_list)
 
 fer_json = model.to_json()
 with open("fer.json", "w") as json_file:
