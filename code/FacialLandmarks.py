@@ -181,7 +181,7 @@ while run_cam:
     
     cv2.imshow("image", image)
     
-    # If you are using a 64-bit machine, you have to modify 
+    # If you are using a 64-bit machine, you have to modif
     # cv2.waitKey(0) line as follows : k = cv2.waitKey(0) & 0xFF
     k = cv2.waitKey(1) 
     # press y to turn on emoji
