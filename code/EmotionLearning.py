@@ -181,13 +181,13 @@ model.compile(optimizer = adam, loss = 'categorical_crossentropy', metrics = ['a
         ImageLabelingLogger(x_training)
     ] """
     #[ModelCheckpoint("./your_model_checkpoints/weights.hd5",monitor='val_loss', verbose=1, save_best_only=True),TensorBoard(log_dir='./Graph', histogram_freq=0, write_graph=True, write_images=True)]
-callback_list = [
-    ModelCheckpoint(
-            filepath="weights.e{epoch:02d}-" + \
-                    "acc{val_sparse_categorical_accuracy:.4f}.h5",
-            monitor='val_sparse_categorical_accuracy',
-            save_best_only=True,
-            save_weights_only=True),
+callback_list = [ModelCheckpoint("./your_model_checkpoints/weights.hd5",monitor='val_loss', verbose=1, save_best_only=True),
+    # ModelCheckpoint(
+    #         filepath="weights.e{epoch:02d}-" + \
+    #                 "acc{val_sparse_categorical_accuracy:.4f}.h5",
+    #         monitor='val_sparse_categorical_accuracy',
+    #         save_best_only=True,
+    #         save_weights_only=True),
     
         # If you want to visualize the files created during training, run in your terminal
         # tensorboard --logdir path_to_current_dir/Graph 
