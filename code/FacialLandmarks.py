@@ -39,18 +39,18 @@ from scipy import ndimage
 from skimage import io
 from skimage import img_as_float, img_as_ubyte
 from skimage.color import rgb2gray
-from keras.models import model_from_json
+from tensorflow.keras.models import model_from_json
 
 # https://github.com/Paulymorphous/Facial-Emotion-Recognition
 ###
 # This method will load the weights that our CNN has produced
 def load_model(path):
-	json_file = open(path + 'fer.json', 'r')
+	json_file = open(path + 'chris_model.json', 'r')
 	loaded_model_json = json_file.read()
 	json_file.close()
 	
 	model = model_from_json(loaded_model_json)
-	model.load_weights(path + "fer.h5")
+	model.load_weights(path + "chris_weights_fer63_86.h5")
 	print("Loaded model from disk")
 	return model
 
@@ -62,7 +62,7 @@ def load_model(path):
 def predict_emotion(gray, x, y, w, h):
     
     face = np.expand_dims(np.expand_dims(np.resize(gray[y:y+w, x:x+h]/255, (48, 48)),-1), 0)
-    #face = np.expand_dims(np.expand_dims(np.resize(cv2.imread('surprise.png',0), (48, 48)),-1), 0)
+    #face = np.expand_dims(np.expand_dims(np.resize(cv2.imread('fear.png',0), (48, 48)),-1), 0)
     prediction = model.predict([face])
 
 
