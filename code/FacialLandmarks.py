@@ -39,18 +39,18 @@ from scipy import ndimage
 from skimage import io
 from skimage import img_as_float, img_as_ubyte
 from skimage.color import rgb2gray
-from keras.models import model_from_json
+from tensorflow.keras.models import model_from_json
 
 # https://github.com/Paulymorphous/Facial-Emotion-Recognition
 ###
 # This method will load the weights that our CNN has produced
 def load_model(path):
-	json_file = open(path + 'fer.json', 'r')
+	json_file = open(path + 'chris_model.json', 'r')
 	loaded_model_json = json_file.read()
 	json_file.close()
 	
 	model = model_from_json(loaded_model_json)
-	model.load_weights(path + "fer.h5")
+	model.load_weights(path + "chris_weights_fer63_86.h5")
 	print("Loaded model from disk")
 	return model
 
@@ -62,7 +62,7 @@ def load_model(path):
 def predict_emotion(gray, x, y, w, h):
     
     face = np.expand_dims(np.expand_dims(np.resize(gray[y:y+w, x:x+h]/255, (48, 48)),-1), 0)
-    #face = np.expand_dims(np.expand_dims(np.resize(cv2.imread('surprise.png',0), (48, 48)),-1), 0)
+    #face = np.expand_dims(np.expand_dims(np.resize(cv2.imread('fear.png',0), (48, 48)),-1), 0)
     prediction = model.predict([face])
 
 
@@ -93,8 +93,8 @@ overlaidImage = np.ones((100,100,3),dtype='uint8')*255
 alpha = 0.4
 
 # if (you have only 1 webcam){ set device = 0} else{ chose your favorite webcam setting device = 1, 2 ,3 ... }
-#cap = cv2.VideoCapture(0)
-cap = cv2.VideoCapture(cv2.CAP_DSHOW)
+cap = cv2.VideoCapture(0)
+#cap = cv2.VideoCapture(cv2.CAP_DSHOW)
 
 # This is a boolean that can be set to True or False to turn the emoji feature on and off. The program
 # reacts to the 'y' and 'n' keys to turn the emoji on (y) and off (n). 
