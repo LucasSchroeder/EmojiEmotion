@@ -93,7 +93,8 @@ overlaidImage = np.ones((100,100,3),dtype='uint8')*255
 alpha = 0.4
 
 # if (you have only 1 webcam){ set device = 0} else{ chose your favorite webcam setting device = 1, 2 ,3 ... }
-cap = cv2.VideoCapture(0)
+#cap = cv2.VideoCapture(0)
+cap = cv2.VideoCapture(cv2.CAP_DSHOW)
 
 # This is a boolean that can be set to True or False to turn the emoji feature on and off. The program
 # reacts to the 'y' and 'n' keys to turn the emoji on (y) and off (n). 
