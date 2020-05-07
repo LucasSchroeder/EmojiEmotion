@@ -59,13 +59,13 @@ model.add(Conv2D(64, (3, 3), padding="same", activation="relu", name="block1_con
 model.add(Conv2D(64, (3, 3), padding="same", activation="relu", name="block1_conv2"))
 model.add(BatchNormalization())
 model.add(MaxPool2D(pool_size=(2,2), strides=(2, 2), name="block1_pool"))
-model.add(Dropout(0.5))
+model.add(Dropout(0.7))
     # Block 2
 model.add(Conv2D(128, (3, 3), padding="same", activation="relu", name="block2_conv1"))
 model.add(Conv2D(128, (3, 3), padding="same", activation="relu", name="block2_conv2"))
 model.add(BatchNormalization())
 model.add(MaxPool2D(pool_size=(2,2), strides=(2, 2), name="block2_pool"))
-model.add(Dropout(0.5))
+model.add(Dropout(0.7))
     # Block 3, 
 model.add(Conv2D(256, (3, 3), padding="same", activation="relu", name="block3_conv1"))
 model.add(Conv2D(256, (3, 3), padding="same", activation="relu", name="block3_conv2"))
@@ -86,7 +86,7 @@ model.add(Conv2D(512, (3, 3), padding="same", activation="relu", name="block5_co
 model.add(Conv2D(512, (3, 3), padding="same", activation="relu", name="block5_conv3"))
 model.add(BatchNormalization())
 model.add(MaxPool2D(pool_size=(2,2), strides=(2, 2), name="block5_pool"))
-model.add(Dropout(0.5))
+model.add(Dropout(0.2))
 model.add(Flatten())
 model.add(Dense(512, activation= "relu"))
 model.add(Dense(256, activation= "relu"))
@@ -94,52 +94,13 @@ model.add(Dense(128, activation= "relu"))
 model.add(Dense(64, activation= "relu"))
 model.add(Dense(hp.num_labels, activation= "softmax"))
 
-"""
-model = Sequential()
-    
-model.add(Conv2D(64, (3, 3), activation='relu', input_shape=(48, 48, 1), kernel_regularizer=l2(0.01)))
-model.add(Conv2D(64, (3, 3), padding='same',activation='relu'))
-model.add(BatchNormalization())
-model.add(MaxPooling2D(pool_size=(2,2), strides=(2, 2)))
-model.add(Dropout(0.5))
-    
-model.add(Conv2D(128, (3, 3), padding='same', activation='relu'))
-model.add(BatchNormalization())
-model.add(Conv2D(128, (3, 3), padding='same', activation='relu'))
-model.add(BatchNormalization())
-model.add(Conv2D(128, (3, 3), padding='same', activation='relu'))
-model.add(BatchNormalization())
-model.add(MaxPooling2D(pool_size=(2,2)))
-model.add(Dropout(0.5))
-    
-model.add(Conv2D(256, (3, 3), padding='same', activation='relu'))
-model.add(BatchNormalization())
-model.add(Conv2D(256, (3, 3), padding='same', activation='relu'))
-model.add(BatchNormalization())
-model.add(Conv2D(256, (3, 3), padding='same', activation='relu'))
-model.add(BatchNormalization())
-model.add(MaxPooling2D(pool_size=(2,2)))
-model.add(Dropout(0.5))
-    
-model.add(Conv2D(512, (3, 3), padding='same', activation='relu'))
-model.add(BatchNormalization())
-model.add(Conv2D(512, (3, 3), padding='same', activation='relu'))
-model.add(BatchNormalization())
-model.add(Conv2D(512, (3, 3), padding='same', activation='relu'))
-model.add(BatchNormalization())
-model.add(MaxPooling2D(pool_size=(2,2)))
-model.add(Dropout(0.5))
-    
-model.add(Flatten())
-model.add(Dense(512, activation='relu'))
-model.add(Dropout(0.5))
-model.add(Dense(256, activation='relu'))
-model.add(Dropout(0.5))
-model.add(Dense(128, activation='relu'))
-model.add(Dropout(0.5))
-model.add(Dense(64, activation='relu'))
-model.add(Dropout(0.5))
-model.add(Dense(7, activation='softmax'))"""
+train_datagen = tf.keras.preprocessing.image.ImageDataGenerator(
+    rotation_range=10,
+    width_shift_range = .1,  # horizontal shifting
+    height_shift_range = .1, # vertical shifting
+    shear_range=0.2,
+    zoom_range=0.2,   
+    horizontal_flip=True)
 
 # create your_model_checkpoints directory
 if not os.path.exists("your_model_checkpoints"):
@@ -156,7 +117,7 @@ callback_list = [ModelCheckpoint("your_model_checkpoints/weights.hd5",monitor='v
     ]
     
 print(model.summary())
-model.fit(x_training, y_training, batch_size=hp.batch_size, epochs=hp.epochs, verbose=1, validation_data=(x_testing, y_testing), shuffle=True, callbacks=callback_list)
+model.fit(train_datagen.flow(x_training, y_training, hp.batch_size), steps_per_epoch = len(x_training)//hp.batch_size, epochs=hp.epochs, verbose=1, validation_data=(x_testing, y_testing), shuffle=True, callbacks=callback_list)
 
 fer_json = model.to_json()
 with open("fer.json", "w") as json_file:
