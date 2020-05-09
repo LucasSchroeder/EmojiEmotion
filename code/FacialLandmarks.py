@@ -39,20 +39,24 @@ from scipy import ndimage
 from skimage import io
 from skimage import img_as_float, img_as_ubyte
 from skimage.color import rgb2gray
+#from tensorflow.keras.models import load_model
+
+from keras.preprocessing.image import img_to_array
+import imutils
 from tensorflow.keras.models import model_from_json
 
 # https://github.com/Paulymorphous/Facial-Emotion-Recognition
 ###
 # This method will load the weights that our CNN has produced
 def load_model(path):
-	json_file = open(path + 'chris_model.json', 'r')
-	loaded_model_json = json_file.read()
-	json_file.close()
-	
-	model = model_from_json(loaded_model_json)
-	model.load_weights(path + "chris_weights_fer63_86.h5")
-	print("Loaded model from disk")
-	return model
+    json_file = open(path + 'chris_model.json', 'r')
+    loaded_model_json = json_file.read()
+    json_file.close()
+    
+    model = model_from_json(loaded_model_json)
+    model.load_weights(path + "chris_weights_fer63_86.h5")
+    print("Loaded model fromasadad disk")
+    return model
 
 # We will use this method to predict the emotion of a subject. It takes in 
 # the whole webcam image and then resizes it according to the bounding 
@@ -60,12 +64,9 @@ def load_model(path):
 # resize it to a 48x48 image, just like the image samples from the FER2013
 # dataset. 
 def predict_emotion(gray, x, y, w, h):
-    
-    face = np.expand_dims(np.expand_dims(np.resize(gray[y:y+w, x:x+h]/255, (48, 48)),-1), 0)
+    face = np.expand_dims(np.expand_dims(cv2.resize(gray[y:y+w, x:x+h]/255, (48, 48)),-1), 0)
     #face = np.expand_dims(np.expand_dims(np.resize(cv2.imread('fear.png',0), (48, 48)),-1), 0)
     prediction = model.predict([face])
-
-
 
     return(int(np.argmax(prediction)), round(max(prediction[0])*100, 2))
 
@@ -74,6 +75,8 @@ def predict_emotion(gray, x, y, w, h):
 # load the model, which will call load_model, defined above
 ###############################################################################################
 path = "Models/"
+path1 = "Models/chris_weights_fer63_86.h5"
+path2 = '_mini_XCEPTION.102-0.66.hdf5'
 model = load_model(path)
 ###############################################################################################
 
@@ -105,10 +108,11 @@ while run_cam:
     # Get the image from the webcam and convert it into a gray image scale
     _, image = cap.read()
     if drawEmoji == True:
+        #image = imutils.resize(image,width=300)
+
         gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-        gray = cv2.flip(image,1)
-        image = cv2.flip(image,1)
-        
+        # gray = cv2.flip(image,1)
+        # image = cv2.flip(image,1)
 
         # Get faces into webcam's image
         rects = detector(gray, 0)
@@ -127,7 +131,7 @@ while run_cam:
             
             emotion_id, confidence = predict_emotion(gray, cornerX, cornerY, squareWidth, squareHeight)
             print("Confidence of prediction: ", confidence)
-            if confidence < 70:
+            if confidence < 20:
                 emotion_id = previousEmotion
                 print("previous emotion is used")
             previousEmotion = emotion_id
