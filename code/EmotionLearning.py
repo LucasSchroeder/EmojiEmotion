@@ -17,10 +17,8 @@ from tensorflow.keras.layers import BatchNormalization
 from tensorflow.keras.callbacks import TensorBoard
 from tensorflow.keras.callbacks import ModelCheckpoint
 import hyperparameters as hp
-from tensorboard_utils import ImageLabelingLogger, ConfusionMatrixLogger
 
-
-df=pd.read_csv('fer2013.csv')
+df=pd.read_csv('../../EmojiData/fer2013.csv')
 df.dropna()
 
 
